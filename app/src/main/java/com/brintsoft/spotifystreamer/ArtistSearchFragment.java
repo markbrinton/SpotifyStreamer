@@ -1,5 +1,6 @@
 package com.brintsoft.spotifystreamer;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -8,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -54,12 +56,24 @@ public class ArtistSearchFragment extends Fragment {
         ListView artistListView = (ListView) rootView.findViewById(R.id.listview_artists);
         artistListView.setAdapter(mArtistListAdapter);
 
+        artistListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ArtistItem item = mArtistListAdapter.getItem(position);
+                Log.i(LOG_TAG,"You picked item: "+item+", pos="+position) ;
+
+                Intent detailIntent = new Intent(getActivity(),ArtistDetailActivity.class) ;
+                detailIntent.putExtra(Intent.EXTRA_TEXT,item.getArtistName()) ;
+                startActivity(detailIntent) ;
+            }
+        });
+
         return rootView ;
     }
 
     private void searchArtist(String artist) {
         Log.i(LOG_TAG, "searchArtist("+artist+")");
-        SpotifyArtsitSearchTask searchTask = new SpotifyArtsitSearchTask(getActivity(),mArtistListAdapter) ;
+        SpotifyArtistSearchTask searchTask = new SpotifyArtistSearchTask(getActivity(),mArtistListAdapter) ;
         searchTask.execute(artist) ;
     }
 

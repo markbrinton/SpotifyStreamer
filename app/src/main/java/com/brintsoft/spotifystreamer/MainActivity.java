@@ -17,7 +17,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void tryStuff() {
-        SpotifyArtsitSearchTask task = new SpotifyArtsitSearchTask(this,null);
+        SpotifyArtistSearchTask task = new SpotifyArtistSearchTask(this,null);
         Log.d(LOG_TAG, "tryStuff") ;
         task.execute();
     }
