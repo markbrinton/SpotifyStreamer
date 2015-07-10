@@ -16,8 +16,7 @@ import kaaes.spotify.webapi.android.models.Track;
 import kaaes.spotify.webapi.android.models.Tracks;
 
 /**
- * An AsyncTask class that will use the Spotify Web API to bring back a list of artists based on
- * a search string.
+ * An AsyncTask class that will use the Spotify Web API to bring back a list of tracks for an artist.
  *
  * Spotify Web API:
  *   https://github.com/kaaes/spotify-web-api-android
@@ -56,6 +55,8 @@ public class SpotifyArtistTracksTask extends AsyncTask<String, Void, ArtistTrack
 
         SpotifyService spotify = mApi.getService() ;
 
+        // Country code has to be included in the options
+        // TODO: Make it a user preference.
         Map<String,Object> options = new HashMap<String,Object>() ;
         options.put("country",COUNTRY_CODE) ;
 
@@ -67,8 +68,10 @@ public class SpotifyArtistTracksTask extends AsyncTask<String, Void, ArtistTrack
 
         for( int i=0; i<numTracks; i++ ) {
             Track track = topTracks.tracks.get(i) ;
+
             List<Image> albumImages = track.album.images ;
             String imageURL = (albumImages!=null && !albumImages.isEmpty())? albumImages.get(0).url : null ;
+            
             ArtistTrack artistTrack = new ArtistTrack(track.id,track.album.name,track.name, imageURL) ;
             result[i] = artistTrack ;
             Log.d(LOG_TAG,"Track "+i+", "+artistTrack) ;
@@ -88,7 +91,8 @@ public class SpotifyArtistTracksTask extends AsyncTask<String, Void, ArtistTrack
                 mArtistTrackAdapter.add(track);
             }
         } else {
-            showToast("No tracks found") ;
+            String noTracks = mContext.getString(R.string.toast_no_tracks_found) ;
+            showToast(noTracks) ;
         }
     }
 

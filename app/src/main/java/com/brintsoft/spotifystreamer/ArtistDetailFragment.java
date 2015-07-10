@@ -2,12 +2,13 @@ package com.brintsoft.spotifystreamer;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+
+import android.support.v4.app.Fragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,10 @@ public class ArtistDetailFragment extends Fragment {
 
             SpotifyArtistTracksTask tracksTask = new SpotifyArtistTracksTask(getActivity(),mArtistTrackAdapter) ;
             tracksTask.execute(mArtistId) ;
+
+            // Include artist name in the title
+            String title = getString(R.string.title_activity_artist_detail).toString() ;
+            getActivity().setTitle(title+": "+mArtistName);
         }
 
         return rootView ;

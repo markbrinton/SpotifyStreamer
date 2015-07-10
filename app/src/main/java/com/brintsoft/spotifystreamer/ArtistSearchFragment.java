@@ -8,7 +8,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -17,9 +16,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
- * A placeholder fragment containing a simple view.
+ * Provide a search field and list of artist search results.
+ *
  */
 public class ArtistSearchFragment extends Fragment {
     private static final String LOG_TAG = ArtistSearchFragment.class.getSimpleName() ;
@@ -42,11 +41,10 @@ public class ArtistSearchFragment extends Fragment {
         mSearchField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (true || actionId == EditorInfo.IME_ACTION_SEND) {
-                    String s = mSearchField.getText().toString();
-                    Log.d(LOG_TAG, "onEditorAction called with event=" + event + ", s='" + s + "'");
-                    searchArtist(s);
-                }
+                String s = mSearchField.getText().toString();
+                Log.d(LOG_TAG, "onEditorAction called with event=" + event + ", s='" + s + "'");
+                searchArtist(s);
+
                 return false;
             }
         });
@@ -80,7 +78,7 @@ public class ArtistSearchFragment extends Fragment {
         super.onSaveInstanceState(savedInstanceState);
         String artist = mSearchField.getText().toString() ;
 
-        Log.i(LOG_TAG, "onSaveInstanceState() saving artist = " + artist);
+        Log.d(LOG_TAG, "onSaveInstanceState() saving artist = " + artist);
         savedInstanceState.putString("artist", artist);
     }
 
@@ -90,17 +88,17 @@ public class ArtistSearchFragment extends Fragment {
 
         if( savedInstanceState!=null ) {
             String artist = savedInstanceState.getString("artist") ;
-            Log.i(LOG_TAG, "onViewStateRestored() restore artist = "+artist);
+            Log.d(LOG_TAG, "onViewStateRestored() restore artist = "+artist);
 
             searchArtist(artist);
         }
         else {
-            Log.i(LOG_TAG, "onViewStateRestored() restore with null");
+            Log.d(LOG_TAG, "onViewStateRestored() restore with null");
         }
     }
 
     private void searchArtist(String artist) {
-        Log.i(LOG_TAG, "searchArtist("+artist+")");
+        Log.d(LOG_TAG, "searchArtist("+artist+")");
         SpotifyArtistSearchTask searchTask = new SpotifyArtistSearchTask(getActivity(),mArtistListAdapter) ;
         searchTask.execute(artist) ;
     }
