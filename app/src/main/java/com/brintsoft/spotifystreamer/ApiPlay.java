@@ -6,8 +6,10 @@ import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 
 /**
+ * Class for experimenting with the Spotify API.  Not part of the final app.
  * Created by mark on 17/06/15.
  */
+
 public class ApiPlay {
     private static SpotifyApi mApi = null;
 

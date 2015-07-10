@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:minHeight="?android:attr/listPreferredItemHeight"
-    android:id="@+id/list_item_artist_textview"
-    android:text="Some Text"
-    android:gravity="center_vertical"
-    >
 
-</TextView>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:padding="2dip" >
+
+    <ImageView
+        android:id="@+id/list_item_artist_image"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.2"
+        android:layout_marginRight="@dimen/abc_button_padding_horizontal_material"
+        android:src="@drawable/abc_btn_radio_material"
+        />
+
+    <TextView
+        android:id="@+id/list_item_artist_textview"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="?android:attr/listPreferredItemHeight"
+        android:layout_weight="0.8"
+        />
+
+</LinearLayout>

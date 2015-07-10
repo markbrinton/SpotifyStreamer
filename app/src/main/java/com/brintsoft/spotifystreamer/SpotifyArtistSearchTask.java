@@ -12,7 +12,9 @@ import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
 
 /**
- * An AsyncTask class that will use the Spotify Web API to bring back a list of artists based on a search string.
+ * An AsyncTask class that will use the Spotify Web API to bring back a list of artists based on
+ * a search string.
+ *
  * Spotify Web API:
  *   https://github.com/kaaes/spotify-web-api-android
  *
@@ -30,7 +32,7 @@ public class SpotifyArtistSearchTask extends AsyncTask<String, Void, ArtistItem[
     private final Context mContext;
     private Toast mToast = null;
 
-    public SpotifyArtistSearchTask(Context context, ArrayAdapter<ArtistItem> artistAdapter) {
+    public SpotifyArtistSearchTask(Context context, ArtistItemArrayAdapter artistAdapter) {
         mContext = context;
         mArtistAdapter = artistAdapter;
     }
@@ -63,7 +65,8 @@ public class SpotifyArtistSearchTask extends AsyncTask<String, Void, ArtistItem[
             if( artist.images !=null && !artist.images.isEmpty() ) {
                 imageURL = artist.images.get(0).url ;
             }
-            result[i] = new ArtistItem(artist.name, imageURL) ;
+
+            result[i] = new ArtistItem(artist.id, artist.name, imageURL) ;
         }
 
         return result;
@@ -80,11 +83,13 @@ public class SpotifyArtistSearchTask extends AsyncTask<String, Void, ArtistItem[
                 mArtistAdapter.add(artist);
             }
         } else {
-            showToast("No artist found") ;
+            String notFound = mContext.getText(R.string.toast_no_artist_found).toString() ;
+            showToast(notFound);
         }
     }
 
     private void showToast(String text) {
+        // Cancel any existing Toast so they don't stack up.
         if( mToast!=null ) {
             mToast.cancel() ;
         }

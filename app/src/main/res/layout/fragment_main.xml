@@ -15,7 +15,7 @@
         android:singleLine="true"
         android:maxLines="1"
         android:lines="1"
-        android:hint="Enter artist name"
+        android:hint="@string/hint_artist_name"
         android:inputType="text"
         android:imeOptions="actionSearch"
         />
@@ -27,6 +27,5 @@
         android:layout_gravity="top"
         android:id="@+id/listview_artists"
         />
-
 
 </LinearLayout>
