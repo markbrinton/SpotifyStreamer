@@ -50,23 +50,29 @@ public class SpotifyArtistSearchTask extends AsyncTask<String, Void, ArtistItem[
 
         SpotifyService spotify = mApi.getService() ;
 
-        ArtistsPager results = spotify.searchArtists(artistName);
-        Log.d("play","results = "+results) ;
+        // Guard against potential problems (Spotify, n/w, API, etc)
+        try {
+            ArtistsPager results = spotify.searchArtists(artistName);
+            Log.d(LOG_TAG,"artist search results = "+results) ;
 
-        int numArtists = results.artists.items.size() ;
-        result = new ArtistItem[numArtists] ;
+            int numArtists = results.artists.items.size() ;
+            result = new ArtistItem[numArtists] ;
 
-        // Build up an array of ArtistItem objects representing all the matches.
-        for( int i=0 ; i<numArtists; i++ ) {
-            Artist artist = results.artists.items.get(i) ;
+            // Build up an array of ArtistItem objects representing all the matches.
+            for( int i=0 ; i<numArtists; i++ ) {
+                Artist artist = results.artists.items.get(i) ;
 
-            // There can be 0 or more image URLs for an artist
-            String imageURL = null ;
-            if( artist.images !=null && !artist.images.isEmpty() ) {
-                imageURL = artist.images.get(0).url ;
+                // There can be 0 or more image URLs for an artist
+                String imageURL = null ;
+                if( artist.images !=null && !artist.images.isEmpty() ) {
+                    imageURL = artist.images.get(0).url ;
+                }
+
+                result[i] = new ArtistItem(artist.id, artist.name, imageURL) ;
             }
-
-            result[i] = new ArtistItem(artist.id, artist.name, imageURL) ;
+        }
+        catch (Exception e) {
+            Log.e(LOG_TAG,"Problem getting artists from Spotify, caught: "+e.getMessage(), e) ;
         }
 
         return result;

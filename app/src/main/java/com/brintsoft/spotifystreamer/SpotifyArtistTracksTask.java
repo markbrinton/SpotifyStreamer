@@ -60,21 +60,29 @@ public class SpotifyArtistTracksTask extends AsyncTask<String, Void, ArtistTrack
         Map<String,Object> options = new HashMap<String,Object>() ;
         options.put("country",COUNTRY_CODE) ;
 
-        Tracks topTracks = spotify.getArtistTopTrack(artistId,options) ;
-        Log.d(LOG_TAG, "getArtistTopTrack success, got " + topTracks) ;
+        // Guard against potential RetrofitError error
+        try {
+            Tracks topTracks = spotify.getArtistTopTrack(artistId,options) ;
+            Log.d(LOG_TAG, "getArtistTopTrack success, got " + topTracks) ;
 
-        int numTracks = topTracks.tracks.size() ;
-        result = new ArtistTrack[numTracks] ;
+            int numTracks = topTracks.tracks.size() ;
+            result = new ArtistTrack[numTracks] ;
 
-        for( int i=0; i<numTracks; i++ ) {
-            Track track = topTracks.tracks.get(i) ;
+            for( int i=0; i<numTracks; i++ ) {
+                Track track = topTracks.tracks.get(i) ;
 
-            List<Image> albumImages = track.album.images ;
-            String imageURL = (albumImages!=null && !albumImages.isEmpty())? albumImages.get(0).url : null ;
-            
-            ArtistTrack artistTrack = new ArtistTrack(track.id,track.album.name,track.name, imageURL) ;
-            result[i] = artistTrack ;
-            Log.d(LOG_TAG,"Track "+i+", "+artistTrack) ;
+                List<Image> albumImages = track.album.images ;
+                String imageURL = (albumImages!=null && !albumImages.isEmpty())? albumImages.get(0).url : null ;
+
+                ArtistTrack artistTrack = new ArtistTrack(track.id,track.album.name,track.name, imageURL) ;
+                result[i] = artistTrack ;
+                Log.d(LOG_TAG,"Track "+i+", "+artistTrack) ;
+            }
+        }
+        // Only expect to see a RetrofitError exception, Handle any exception just in case.
+        catch( Exception e ) {
+            Log.e(LOG_TAG, "getArtistTopTrack failed, caught: " + e.getMessage(), e) ;
+            e.printStackTrace();
         }
 
         return result;

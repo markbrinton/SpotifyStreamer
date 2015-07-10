@@ -1,6 +1,8 @@
 package com.brintsoft.spotifystreamer;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -22,6 +24,7 @@ import java.util.List;
  */
 public class ArtistSearchFragment extends Fragment {
     private static final String LOG_TAG = ArtistSearchFragment.class.getSimpleName() ;
+    private static final String PREFS_KEY_SEARCH = "artist_search" ;
 
     private EditText mSearchField ;
     private ArtistItemArrayAdapter mArtistListAdapter = null ;
@@ -101,5 +104,46 @@ public class ArtistSearchFragment extends Fragment {
         Log.d(LOG_TAG, "searchArtist("+artist+")");
         SpotifyArtistSearchTask searchTask = new SpotifyArtistSearchTask(getActivity(),mArtistListAdapter) ;
         searchTask.execute(artist) ;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(LOG_TAG,"onPause()") ;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        SharedPreferences prefs = getActivity().getPreferences(Context.MODE_PRIVATE);
+        String searchText = prefs.getString(PREFS_KEY_SEARCH, "") ;
+
+        Log.d(LOG_TAG, "onResume() restoring search text '"+searchText+"'") ;
+        mSearchField.setText(searchText);
+
+        if(searchText!=null && searchText.length()>0 ) {
+            searchArtist(searchText);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        String searchText = mSearchField.getText().toString() ;
+        Log.d(LOG_TAG, "onStop() saving search text '"+searchText+"'") ;
+
+        SharedPreferences prefs = getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        editor.putString(PREFS_KEY_SEARCH, searchText) ;
+        editor.commit() ;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d(LOG_TAG, "onStart()") ;
     }
 }
