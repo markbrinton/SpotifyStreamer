@@ -25,9 +25,10 @@ import java.util.List;
  */
 
 public class ArtistDetailFragment extends Fragment {
-    private final String LOG_TAG = ArtistDetailFragment.class.getSimpleName();
-    private final String PREFS_KEY_ARTIST_ID   = "artist_id";
-    private final String PREFS_KEY_ARTIST_NAME = "artist_name";
+    private static final String LOG_TAG = ArtistDetailFragment.class.getSimpleName();
+    private static final String PREFS_KEY_ARTIST_ID   = "artist_id";
+    private static final String PREFS_KEY_ARTIST_NAME = "artist_name";
+    private static final String PREFS_LAST_ACTIVITY = "last_activity" ;
 
     private String mArtistId ;
     private String mArtistName ;
@@ -80,6 +81,11 @@ public class ArtistDetailFragment extends Fragment {
     public void onPause() {
         super.onPause();
         Log.d(LOG_TAG,"onPause()") ;
+
+        SharedPreferences prefs = getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(PREFS_LAST_ACTIVITY, getClass().getSimpleName()) ;
+        editor.commit() ;
     }
 
     @Override

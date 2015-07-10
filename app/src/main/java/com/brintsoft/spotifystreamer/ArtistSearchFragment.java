@@ -25,8 +25,10 @@ import java.util.List;
 public class ArtistSearchFragment extends Fragment {
     private static final String LOG_TAG = ArtistSearchFragment.class.getSimpleName() ;
     private static final String PREFS_KEY_SEARCH = "artist_search" ;
+    private static final String PREFS_LAST_ACTIVITY = "last_activity" ;
 
     private EditText mSearchField ;
+    private boolean  mInDetailActivity ;
     private ArtistItemArrayAdapter mArtistListAdapter = null ;
 
     public ArtistSearchFragment() {
@@ -65,39 +67,21 @@ public class ArtistSearchFragment extends Fragment {
                 ArtistItem item = mArtistListAdapter.getItem(position);
                 Log.d(LOG_TAG, "You picked item: " + item + ", pos=" + position);
 
-                Intent detailIntent = new Intent(getActivity(), ArtistDetailActivity.class);
-                detailIntent.putExtra(ArtistDetailActivity.EXTRA_TEXT_ARTIST_ID,   item.getArtistId());
-                detailIntent.putExtra(ArtistDetailActivity.EXTRA_TEXT_ARTIST_NAME, item.getArtistName());
-
-                startActivity(detailIntent);
+                launchDetailActivity(item.getArtistId(), item.getArtistName());
             }
         });
 
         return rootView ;
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-        String artist = mSearchField.getText().toString() ;
+    private void launchDetailActivity(String artistId, String artistName) {
+        mInDetailActivity = true ;
 
-        Log.d(LOG_TAG, "onSaveInstanceState() saving artist = " + artist);
-        savedInstanceState.putString("artist", artist);
-    }
+        Intent detailIntent = new Intent(getActivity(), ArtistDetailActivity.class);
+        detailIntent.putExtra(ArtistDetailActivity.EXTRA_TEXT_ARTIST_ID, artistId);
+        detailIntent.putExtra(ArtistDetailActivity.EXTRA_TEXT_ARTIST_NAME, artistName);
 
-    @Override
-    public void onViewStateRestored (Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-
-        if( savedInstanceState!=null ) {
-            String artist = savedInstanceState.getString("artist") ;
-            Log.d(LOG_TAG, "onViewStateRestored() restore artist = "+artist);
-
-            searchArtist(artist);
-        }
-        else {
-            Log.d(LOG_TAG, "onViewStateRestored() restore with null");
-        }
+        startActivity(detailIntent);
     }
 
     private void searchArtist(String artist) {
@@ -110,18 +94,32 @@ public class ArtistSearchFragment extends Fragment {
     public void onPause() {
         super.onPause();
         Log.d(LOG_TAG,"onPause()") ;
+
+        SharedPreferences prefs = getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(PREFS_KEY_SEARCH, mSearchField.getText().toString()) ;
+        editor.putString(PREFS_LAST_ACTIVITY, getClass().getSimpleName()) ;
+        editor.commit() ;
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        SharedPreferences prefs = getActivity().getPreferences(Context.MODE_PRIVATE);
-        String searchText = prefs.getString(PREFS_KEY_SEARCH, "") ;
+        mInDetailActivity = false ;
 
-        Log.d(LOG_TAG, "onResume() restoring search text '"+searchText+"'") ;
+        SharedPreferences prefs = getActivity().getPreferences(Context.MODE_PRIVATE);
+        String searchText   = prefs.getString(PREFS_KEY_SEARCH, "") ;
+        String lastActivity = prefs.getString(PREFS_LAST_ACTIVITY, "") ;
+
+        Log.d(LOG_TAG, "onResume() restoring search text '" + searchText + "', last activity = " + lastActivity) ;
+
         mSearchField.setText(searchText);
 
+        if( lastActivity != null && lastActivity.equals( ArtistDetailFragment.class.getSimpleName() )) {
+            launchDetailActivity(searchText,"wibble");
+        }
+        else
         if(searchText!=null && searchText.length()>0 ) {
             searchArtist(searchText);
         }
