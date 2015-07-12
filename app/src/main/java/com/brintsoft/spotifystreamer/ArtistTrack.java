@@ -1,5 +1,8 @@
 package com.brintsoft.spotifystreamer;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Value class for an Artist's Track.
  *
@@ -9,11 +12,21 @@ package com.brintsoft.spotifystreamer;
  * Created by mark on 06/07/15.
  */
 
-public class ArtistTrack {
+public class ArtistTrack implements Parcelable {
     private String mTrackId ;
     private String mImageURI ;
     private String mAlbumName ;
     private String mTrackName ;
+
+    public static final Parcelable.Creator<ArtistTrack> CREATOR = new Parcelable.Creator<ArtistTrack>() {
+        public ArtistTrack createFromParcel(Parcel in) {
+            return new ArtistTrack(in);
+        }
+
+        public ArtistTrack[] newArray(int size) {
+            return new ArtistTrack[size];
+        }
+    } ;
 
     public ArtistTrack(String id, String albumName, String trackName, String imageURI) {
         mTrackId    = id ;
@@ -40,5 +53,23 @@ public class ArtistTrack {
 
     public String toString() {
         return "[ArtistTrack: track='"+mTrackName+"', album='"+mAlbumName+"']" ;
+    }
+
+    public ArtistTrack(Parcel in) {
+        mTrackId    = in.readString();
+        mAlbumName  = in.readString() ;
+        mTrackName  = in.readString() ;
+        mImageURI   = in.readString() ;
+    }
+
+    public int describeContents() {
+        return 0;
+    }
+
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeString(mTrackId);
+        out.writeString(mAlbumName);
+        out.writeString(mTrackName);
+        out.writeString(mImageURI);
     }
 }

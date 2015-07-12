@@ -71,6 +71,7 @@ public class SpotifyArtistTracksTask extends AsyncTask<String, Void, ArtistTrack
             for( int i=0; i<numTracks; i++ ) {
                 Track track = topTracks.tracks.get(i) ;
 
+                // TODO: this gets the 1st image - but we should search through to find smallest size.
                 List<Image> albumImages = track.album.images ;
                 String imageURL = (albumImages!=null && !albumImages.isEmpty())? albumImages.get(0).url : null ;
 
