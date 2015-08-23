@@ -1,4 +1,4 @@
-package com.brintsoft.spotifystreamer;
+package com.brintsoft.spotifystreamer.ui;
 
 import android.content.Context;
 import android.util.Log;
@@ -9,6 +9,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.brintsoft.spotifystreamer.R;
+import com.brintsoft.spotifystreamer.model.ArtistTrack;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;

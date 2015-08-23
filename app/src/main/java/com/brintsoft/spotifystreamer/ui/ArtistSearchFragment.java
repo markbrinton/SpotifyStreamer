@@ -1,4 +1,4 @@
-package com.brintsoft.spotifystreamer;
+package com.brintsoft.spotifystreamer.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,10 +10,15 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.brintsoft.spotifystreamer.R;
+import com.brintsoft.spotifystreamer.model.ArtistItem;
+import com.brintsoft.spotifystreamer.spotify.SpotifyArtistSearchTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +50,9 @@ public class ArtistSearchFragment extends Fragment {
         mSearchField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                // Hide the keyboard after user presses search button.
+                hideKeyboard() ;
+
                 String s = mSearchField.getText().toString();
                 Log.d(LOG_TAG, "onEditorAction called with event=" + event + ", s='" + s + "'");
                 searchArtist(s);
@@ -59,18 +67,28 @@ public class ArtistSearchFragment extends Fragment {
         ListView artistListView = (ListView) rootView.findViewById(R.id.listview_artists);
         artistListView.setAdapter(mArtistListAdapter);
 
-        // Launch the ArtistDetailActivity when an artist is selected from the list
+        // Set action when an artist is selected from the list
         artistListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ArtistItem item = mArtistListAdapter.getItem(position);
                 Log.d(LOG_TAG, "You picked item: " + item + ", pos=" + position);
 
-                launchDetailActivity(item.getArtistId(), item.getArtistName());
+                // Delegate to the parent activity, as it knows how fragments/activities are arranged.
+                ArtistSelectionCallback cb = (ArtistSelectionCallback)getActivity() ;
+                cb.onArtistSelected(item) ;
             }
         });
 
         return rootView ;
+    }
+
+    private void hideKeyboard() {
+        View view = getActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     private void launchDetailActivity(String artistId, String artistName) {

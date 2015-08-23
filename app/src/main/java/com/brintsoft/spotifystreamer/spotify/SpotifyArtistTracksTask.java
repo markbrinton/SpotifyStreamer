@@ -1,9 +1,13 @@
-package com.brintsoft.spotifystreamer;
+package com.brintsoft.spotifystreamer.spotify;
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.brintsoft.spotifystreamer.R;
+import com.brintsoft.spotifystreamer.model.ArtistTrack;
+import com.brintsoft.spotifystreamer.ui.ArtistTrackArrayAdapter;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,12 +38,14 @@ public class SpotifyArtistTracksTask extends AsyncTask<String, Void, ArtistTrack
     private SpotifyApi mApi ;
 
     private ArtistTrackArrayAdapter mArtistTrackAdapter;
+    private List<ArtistTrack> mTracks ;
     private final Context mContext;
     private Toast mToast = null;
 
-    public SpotifyArtistTracksTask(Context context, ArtistTrackArrayAdapter artistTrackAdapter) {
+    public SpotifyArtistTracksTask(Context context, ArtistTrackArrayAdapter artistTrackAdapter, List<ArtistTrack> tracks) {
         mContext = context;
         mArtistTrackAdapter = artistTrackAdapter;
+        mTracks = tracks ;
     }
 
     @Override
@@ -50,6 +56,10 @@ public class SpotifyArtistTracksTask extends AsyncTask<String, Void, ArtistTrack
         String artistId = params[0] ;
 
         Log.d(LOG_TAG,"SpotifyArtistTracksTask.doInBackground, searching for artist id = '"+artistId+"'") ;
+
+        if( artistId==null ) {
+            return result ;
+        }
 
         mApi = new SpotifyApi() ;
 
@@ -74,8 +84,9 @@ public class SpotifyArtistTracksTask extends AsyncTask<String, Void, ArtistTrack
                 // TODO: this gets the 1st image - but we should search through to find smallest size.
                 List<Image> albumImages = track.album.images ;
                 String imageURL = (albumImages!=null && !albumImages.isEmpty())? albumImages.get(0).url : null ;
+                String artistName = track.artists.get(0).name ;
 
-                ArtistTrack artistTrack = new ArtistTrack(track.id,track.album.name,track.name, imageURL) ;
+                ArtistTrack artistTrack = new ArtistTrack(track.id, artistName, track.album.name, track.name, imageURL, track.preview_url) ;
                 result[i] = artistTrack ;
                 Log.d(LOG_TAG,"Track "+i+", "+artistTrack) ;
             }
@@ -98,6 +109,7 @@ public class SpotifyArtistTracksTask extends AsyncTask<String, Void, ArtistTrack
         if( artistTracks!=null && artistTracks.length>0 ) {
             for( ArtistTrack track : artistTracks ) {
                 mArtistTrackAdapter.add(track);
+                mTracks.add(track) ;
             }
         } else {
             String noTracks = mContext.getString(R.string.toast_no_tracks_found) ;

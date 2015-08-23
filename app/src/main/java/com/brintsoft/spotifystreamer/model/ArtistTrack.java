@@ -1,4 +1,4 @@
-package com.brintsoft.spotifystreamer;
+package com.brintsoft.spotifystreamer.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -15,8 +15,10 @@ import android.os.Parcelable;
 public class ArtistTrack implements Parcelable {
     private String mTrackId ;
     private String mImageURI ;
+    private String mArtistName ;
     private String mAlbumName ;
     private String mTrackName ;
+    private String mPreviewURI ;
 
     public static final Parcelable.Creator<ArtistTrack> CREATOR = new Parcelable.Creator<ArtistTrack>() {
         public ArtistTrack createFromParcel(Parcel in) {
@@ -28,11 +30,13 @@ public class ArtistTrack implements Parcelable {
         }
     } ;
 
-    public ArtistTrack(String id, String albumName, String trackName, String imageURI) {
-        mTrackId    = id ;
+    public ArtistTrack(String trackId, String artistName, String albumName, String trackName, String imageURI, String previewURI) {
+        mTrackId    = trackId ;
+        mArtistName = artistName ;
         mAlbumName  = albumName ;
         mTrackName  = trackName ;
         mImageURI   = imageURI ;
+        mPreviewURI = previewURI ;
     }
 
     public String getImageURL() {
@@ -43,6 +47,10 @@ public class ArtistTrack implements Parcelable {
         return mTrackId ;
     }
 
+    public String getArtistName() {
+        return mArtistName ;
+    }
+
     public String getAlbumName() {
         return mAlbumName ;
     }
@@ -51,15 +59,21 @@ public class ArtistTrack implements Parcelable {
         return mTrackName ;
     }
 
+    public String getPreviewURL() {
+        return mPreviewURI ;
+    }
+
     public String toString() {
-        return "[ArtistTrack: track='"+mTrackName+"', album='"+mAlbumName+"']" ;
+        return "[ArtistTrack: track='"+mTrackName+"', artist='"+mArtistName+"', album='"+mAlbumName+"', image="+mImageURI+", preview="+mPreviewURI+"]" ;
     }
 
     public ArtistTrack(Parcel in) {
         mTrackId    = in.readString();
+        mArtistName = in.readString() ;
         mAlbumName  = in.readString() ;
         mTrackName  = in.readString() ;
         mImageURI   = in.readString() ;
+        mPreviewURI = in.readString() ;
     }
 
     public int describeContents() {
@@ -68,8 +82,10 @@ public class ArtistTrack implements Parcelable {
 
     public void writeToParcel(Parcel out, int flags) {
         out.writeString(mTrackId);
+        out.writeString(mArtistName);
         out.writeString(mAlbumName);
         out.writeString(mTrackName);
         out.writeString(mImageURI);
+        out.writeString(mPreviewURI);
     }
 }

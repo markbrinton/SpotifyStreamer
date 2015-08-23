@@ -1,10 +1,14 @@
-package com.brintsoft.spotifystreamer;
+package com.brintsoft.spotifystreamer.spotify;
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
+
+import com.brintsoft.spotifystreamer.ui.ArtistItemArrayAdapter;
+import com.brintsoft.spotifystreamer.R;
+import com.brintsoft.spotifystreamer.model.ArtistItem;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
