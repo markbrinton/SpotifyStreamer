@@ -67,6 +67,9 @@ public class ArtistSearchFragment extends Fragment {
         ListView artistListView = (ListView) rootView.findViewById(R.id.listview_artists);
         artistListView.setAdapter(mArtistListAdapter);
 
+        // Set the selector so we get background colour in list toshow selection
+        artistListView.setSelector(R.drawable.touch_selector);
+
         // Set action when an artist is selected from the list
         artistListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
