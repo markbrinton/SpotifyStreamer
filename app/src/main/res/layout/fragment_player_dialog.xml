@@ -3,119 +3,105 @@
     android:layout_height="match_parent">
 
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    >
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/dialog_artist_name_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:fontFamily="sans-serif-condensed"
-        android:textSize="16sp"
-        />
-
-    <TextView
-        android:id="@+id/dialog_album_name_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:fontFamily="sans-serif-condensed"
-        android:textSize="16sp"
-        />
-
-    <ImageView
-        android:id="@+id/dialog_album_imageview"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:layout_gravity="center"
-        android:src="@drawable/abc_btn_rating_star_on_mtrl_alpha"
-        />
-
-    <TextView
-        android:id="@+id/dialog_track_name_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:fontFamily="sans-serif-condensed"
-        android:textSize="16sp"
-        />
-
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        >
-
-        <SeekBar
-            android:layout_width="fill_parent"
+        <TextView
+            android:id="@+id/dialog_artist_name_textview"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/dialog_seekbar"
             android:layout_gravity="center_horizontal"
-            />
+            android:fontFamily="sans-serif-condensed"
+            android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/dialog_track_position_textview"
+            android:id="@+id/dialog_album_name_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/dialog_seekbar"
-            android:layout_alignParentLeft="true"
-            android:paddingLeft="10dp"
+            android:layout_gravity="center_horizontal"
             android:fontFamily="sans-serif-condensed"
-            android:textSize="12sp"
-            android:text="00:00"
-            />
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/dialog_album_imageview"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_gravity="center"
+            android:src="@drawable/abc_btn_rating_star_on_mtrl_alpha" />
 
         <TextView
-            android:id="@+id/dialog_track_length_textview"
+            android:id="@+id/dialog_track_name_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/dialog_seekbar"
-            android:layout_alignParentRight="true"
-            android:paddingRight="10dp"
+            android:layout_gravity="center_horizontal"
             android:fontFamily="sans-serif-condensed"
-            android:textSize="12sp"
-            android:text="12:00"
-            />
+            android:textSize="16sp" />
 
-    </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="center_horizontal"
-        >
+            <SeekBar
+                android:id="@+id/dialog_seekbar"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal" />
 
-        <ImageButton
+            <TextView
+                android:id="@+id/dialog_track_position_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/dialog_seekbar"
+                android:fontFamily="sans-serif-condensed"
+                android:paddingLeft="10dp"
+                android:text="00:00"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/dialog_track_length_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/dialog_seekbar"
+                android:fontFamily="sans-serif-condensed"
+                android:paddingRight="10dp"
+                android:text="12:00"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_media_previous"
-            android:id="@+id/dialog_media_prev_button"
-            android:layout_weight="1"
-            />
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
 
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_media_play"
-            android:id="@+id/dialog_media_play_button"
-            android:layout_weight="1"
-            />
+            <ImageButton
+                android:id="@+id/dialog_media_prev_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@android:drawable/ic_media_previous" />
 
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_media_next"
-            android:id="@+id/dialog_media_next_button"
-            android:layout_weight="1"
-            />
+            <ImageButton
+                android:id="@+id/dialog_media_play_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@android:drawable/ic_media_play" />
 
+            <ImageButton
+                android:id="@+id/dialog_media_next_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@android:drawable/ic_media_next" />
+
+        </LinearLayout>
+        
     </LinearLayout>
 
-
-</LinearLayout>
-
-    </ScrollView>
+</ScrollView>
