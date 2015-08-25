@@ -2,7 +2,6 @@ package com.brintsoft.spotifystreamer.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -29,11 +28,19 @@ import java.util.List;
  */
 public class ArtistSearchFragment extends Fragment {
     private static final String LOG_TAG = ArtistSearchFragment.class.getSimpleName() ;
-    private static final String PREFS_KEY_SEARCH = "artist_search" ;
+
+    /** Bundle key for text entered into the search field. */
+    private static final String KEY_SAVED_SEARCH = "artist_search" ;
+    /** Bundle key for the list of artists that matched the search field. */
+    private static final String KEY_SAVED_ARTISTS = "artist_list" ;
 
     private EditText mSearchField ;
     private boolean  mInDetailActivity ;
+
     private ArtistItemArrayAdapter mArtistListAdapter = null ;
+
+    /** List of artists returned by the search.  Same list that is in the ArtistItemArrayAdapter */
+    private ArrayList<ArtistItem>  mArtistList = new ArrayList<ArtistItem>() ;
 
     public ArtistSearchFragment() {
         Log.d(LOG_TAG,"constructor") ;
@@ -83,6 +90,11 @@ public class ArtistSearchFragment extends Fragment {
             }
         });
 
+        // Restore the previous search text & results.
+        if(savedInstanceState!=null ) {
+            restoreSearch(savedInstanceState);
+        }
+
         return rootView ;
     }
 
@@ -106,55 +118,65 @@ public class ArtistSearchFragment extends Fragment {
 
     private void searchArtist(String artist) {
         Log.d(LOG_TAG, "searchArtist("+artist+")");
-        SpotifyArtistSearchTask searchTask = new SpotifyArtistSearchTask(getActivity(),mArtistListAdapter) ;
+        SpotifyArtistSearchTask searchTask = new SpotifyArtistSearchTask(getActivity(),mArtistListAdapter,mArtistList) ;
         searchTask.execute(artist) ;
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(LOG_TAG,"onPause()") ;
-
-        SharedPreferences prefs = getActivity().getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(PREFS_KEY_SEARCH, mSearchField.getText().toString()) ;
-        editor.commit() ;
+        Log.d(LOG_TAG, "onPause()") ;
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        Log.d(LOG_TAG, "onResume()") ;
 
         mInDetailActivity = false ;
-
-        SharedPreferences prefs = getActivity().getPreferences(Context.MODE_PRIVATE);
-        String searchText   = prefs.getString(PREFS_KEY_SEARCH, "") ;
-
-        Log.d(LOG_TAG, "onResume() restoring search text '" + searchText + "'") ;
-
-        if(searchText!=null && searchText.length()>0 ) {
-            mSearchField.setText(searchText);
-            searchArtist(searchText);
-        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-
-        String searchText = mSearchField.getText().toString() ;
-        Log.d(LOG_TAG, "onStop() saving search text '"+searchText+"'") ;
-
-        SharedPreferences prefs = getActivity().getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-
-        editor.putString(PREFS_KEY_SEARCH, searchText) ;
-        editor.commit() ;
+        Log.d(LOG_TAG, "onStop()") ;
     }
 
     @Override
     public void onStart() {
         super.onStart();
         Log.d(LOG_TAG, "onStart()") ;
+    }
+
+    /** Restore search key and list of artists from the bundle. */
+    private void restoreSearch(Bundle savedInstanceState) {
+        ArrayList<ArtistItem> artistList = savedInstanceState.getParcelableArrayList(KEY_SAVED_ARTISTS) ;
+        if( artistList!=null ) {
+            Log.d(LOG_TAG, "restoreSearch() restored " + artistList.size() + " tracks") ;
+            mArtistListAdapter.addAll(artistList);
+            mArtistList = artistList ;
+        }
+        else {
+            Log.d(LOG_TAG, "restoreSearch() no tracks to restore") ;
+        }
+
+        String searchText = savedInstanceState.getString(KEY_SAVED_SEARCH) ;
+        if( searchText!=null ) {
+            mSearchField.setText(searchText) ;
+            Log.d(LOG_TAG, "restoreSearch() restored search field '"+searchText+"'") ;
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle saveInstanceState) {
+        super.onSaveInstanceState(saveInstanceState);
+
+        String searchText = mSearchField.getText().toString() ;
+
+        int numArtists = mArtistList.size() ;
+        Log.d(LOG_TAG, "onSaveInstanceState() saving " + numArtists + " artists, and search text '"+searchText+"'");
+
+        saveInstanceState.putParcelableArrayList(KEY_SAVED_ARTISTS, mArtistList);
+        saveInstanceState.putString(KEY_SAVED_SEARCH, searchText);
     }
 }

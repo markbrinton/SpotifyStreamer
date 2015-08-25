@@ -57,7 +57,7 @@
                 android:layout_below="@id/dialog_seekbar"
                 android:fontFamily="sans-serif-condensed"
                 android:paddingLeft="10dp"
-                android:text="00:00"
+                android:text=""
                 android:textSize="12sp" />
 
             <TextView
@@ -68,7 +68,7 @@
                 android:layout_below="@id/dialog_seekbar"
                 android:fontFamily="sans-serif-condensed"
                 android:paddingRight="10dp"
-                android:text="12:00"
+                android:text=""
                 android:textSize="12sp" />
 
         </RelativeLayout>
@@ -101,7 +101,7 @@
                 android:src="@android:drawable/ic_media_next" />
 
         </LinearLayout>
-        
+
     </LinearLayout>
 
 </ScrollView>

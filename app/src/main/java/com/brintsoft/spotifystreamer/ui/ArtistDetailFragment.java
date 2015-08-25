@@ -1,6 +1,5 @@
 package com.brintsoft.spotifystreamer.ui;
 
-import android.support.v4.app.FragmentManager ;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -103,16 +102,6 @@ public class ArtistDetailFragment extends Fragment {
         return rootView ;
     }
 
-    /** Bring up the media player dialog, via an intent */
-    private void xxxshowPlayerDialog(int index) {
-        Log.d(LOG_TAG, "showPlayerDialog, track index = " + index) ;
-
-        FragmentManager fm = getActivity().getSupportFragmentManager() ;
-        PlayerDialogFragment playerDialog = PlayerDialogFragment.newInstance(mTracks,index) ;
-
-        playerDialog.show(fm, "fragment_player_dialog");
-    }
-
     /** Bring up the media player dialog.  Get the parent activity to decide how to do that, */
     private void showPlayerDialog(int index) {
         Log.d(LOG_TAG, "showPlayerDialog, track index = " + index) ;
@@ -159,7 +148,12 @@ public class ArtistDetailFragment extends Fragment {
     private void setTracksTitle() {
         // Include artist name in the title
         String title = getString(R.string.title_activity_artist_detail).toString() ;
-        getActivity().setTitle(title + ": " + mArtistName);
+        if( mArtistName!=null ) {
+            getActivity().setTitle(title + ": " + mArtistName);
+        }
+        else {
+            getActivity().setTitle(title + ": ");
+        }
     }
 
     @Override

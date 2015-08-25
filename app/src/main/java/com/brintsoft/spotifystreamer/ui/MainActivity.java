@@ -9,7 +9,6 @@ import android.util.Log;
 import com.brintsoft.spotifystreamer.R;
 import com.brintsoft.spotifystreamer.model.ArtistItem;
 import com.brintsoft.spotifystreamer.model.ArtistTrack;
-import com.brintsoft.spotifystreamer.spotify.SpotifyArtistSearchTask;
 
 import java.util.ArrayList;
 
@@ -92,12 +91,6 @@ public class MainActivity extends ActionBarActivity implements ArtistSelectionCa
             intent.putExtras(args) ;
             startActivity(intent);
         }
-    }
-
-    private void tryStuff() {
-        SpotifyArtistSearchTask task = new SpotifyArtistSearchTask(this,null);
-        Log.d(LOG_TAG, "tryStuff") ;
-        task.execute();
     }
 
     @Override

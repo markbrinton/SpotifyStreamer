@@ -10,6 +10,8 @@ import com.brintsoft.spotifystreamer.ui.ArtistItemArrayAdapter;
 import com.brintsoft.spotifystreamer.R;
 import com.brintsoft.spotifystreamer.model.ArtistItem;
 
+import java.util.ArrayList;
+
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Artist;
@@ -33,12 +35,15 @@ public class SpotifyArtistSearchTask extends AsyncTask<String, Void, ArtistItem[
     private SpotifyApi mApi ;
 
     private ArrayAdapter<ArtistItem> mArtistAdapter;
+    private ArrayList<ArtistItem> mArtists ;
+
     private final Context mContext;
     private Toast mToast = null;
 
-    public SpotifyArtistSearchTask(Context context, ArtistItemArrayAdapter artistAdapter) {
+    public SpotifyArtistSearchTask(Context context, ArtistItemArrayAdapter artistAdapter, ArrayList<ArtistItem> artists) {
         mContext = context;
         mArtistAdapter = artistAdapter;
+        mArtists = artists ;
     }
 
     @Override
@@ -88,9 +93,12 @@ public class SpotifyArtistSearchTask extends AsyncTask<String, Void, ArtistItem[
 
         // Re-populate the list adapter with the new search results.
         mArtistAdapter.clear();
+        mArtists.clear();
+
         if( artists!=null && artists.length>0 ) {
             for( ArtistItem artist : artists ) {
                 mArtistAdapter.add(artist);
+                mArtists.add(artist) ;
             }
         } else {
             String notFound = mContext.getText(R.string.toast_no_artist_found).toString() ;

@@ -33,10 +33,12 @@ public class PlayerDialogFragment extends DialogFragment {
 
     public static final String ARG_TRACK_LIST  = "track_list";
     public static final String ARG_TRACK_INDEX = "track_index";
+    public static final String ARG_TRACK_POS   = "track_pos";
 
     private ArrayList<ArtistTrack> mTracks ;
     private int mTrackIndex ;
     private ArtistTrack mCurrentTrack ;
+    private int mCurrentTrackPos = 0 ;
 
     // Remember UI elements we have to update when the track is changed.
     private TextView  mArtistNameView ;
@@ -78,11 +80,17 @@ public class PlayerDialogFragment extends DialogFragment {
 
     public PlayerDialogFragment() {
         // Required empty public constructor
+        Log.d(LOG_TAG,"ctor") ;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Stop this fragment from being recreated every time.
+        // Bad idea - dialog is lost on screen rotation on a tablet.
+        // setRetainInstance(true) ;
+
         Bundle args = getArguments() ;
 
         mPlayer = null ;
@@ -96,7 +104,7 @@ public class PlayerDialogFragment extends DialogFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d(LOG_TAG,"onCreateView: track = "+mCurrentTrack) ;
+        Log.d(LOG_TAG,"onCreateView: track = "+mCurrentTrack+", player="+mPlayer) ;
 
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_player_dialog, container, false);
@@ -135,22 +143,19 @@ public class PlayerDialogFragment extends DialogFragment {
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if( fromUser && mPlayer!=null) {
+                if (fromUser && mPlayer != null) {
                     mPlayer.seekTo(progress);
                 }
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {  }
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {  }
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
         });
-
-        // Start off with disabled media buttons, until we're ready to play
-        playerIsReady(false);
-        startTrack(mCurrentTrack);
-
-        mHandler = new Handler() ;
 
         mSeekBarUpdater = new Runnable() {
             @Override
@@ -158,10 +163,18 @@ public class PlayerDialogFragment extends DialogFragment {
                 if( mPlayer!=null ) {
                     updateSeekBar( mPlayer.getCurrentPosition() );
                     // Do it again after 1 second
-                    mHandler.postDelayed(this,1000) ;
+                    mHandler.postDelayed(this,500) ;
                 }
             }
         } ;
+
+        if( savedInstanceState!=null ) {
+            restoreTracks(savedInstanceState);
+        }
+
+        // Start off with disabled media buttons, until we're ready to play
+        playerIsReady(false);
+        startTrack(mCurrentTrack);
 
         return root ;
     }
@@ -192,11 +205,12 @@ public class PlayerDialogFragment extends DialogFragment {
         mSeekBar.setProgress(position);
         String time = trackPosToTime(position) ;
         mTrackPos.setText(time);
+        mCurrentTrackPos = position ;
     }
 
     /** Convert track position (msecs) into time in format MM:SS */
     private String trackPosToTime(int pos) {
-        int posInSecs = pos/1000 ;
+        int posInSecs = (int)(0.5 + pos/1000.0) ;
         int mins = posInSecs/60 ;
         int secs = posInSecs - (mins*60) ;
 
@@ -234,8 +248,17 @@ public class PlayerDialogFragment extends DialogFragment {
         int duration = mPlayer.getDuration() ;
         setSeekBar(duration) ;
 
+        // If there's a remembered position then seek to it
+        if( mCurrentTrackPos != 0 ) {
+            mPlayer.seekTo(mCurrentTrackPos);
+        }
+
         // Start playing automatically, as if the user pressed the play button
         mediaPlayPressed();
+
+        if( mHandler == null ) {
+            mHandler = new Handler() ;
+        }
 
         // Start a handler that will update the seekbar UI every second
         mHandler.post(mSeekBarUpdater) ;
@@ -245,8 +268,13 @@ public class PlayerDialogFragment extends DialogFragment {
     private void playerIsFinished() {
         Log.d(LOG_TAG, "Playing has completed.");
 
+        // Seek back to the start in case user wants to play it again.
+        mCurrentTrackPos = 0 ;
+
         // Update the play/pause button when the media has stopped
         setPlayPauseButton(true);
+
+        mPlayer.seekTo(mCurrentTrackPos);
     }
 
     /** Prepare the media player. Set the stream and start the download in the background. */
@@ -301,6 +329,7 @@ public class PlayerDialogFragment extends DialogFragment {
         // Button is disabled if there is no previous track, so we won't go negative..
         mTrackIndex-- ;
         mCurrentTrack = mTracks.get(mTrackIndex) ;
+        mCurrentTrackPos = 0 ;
         startTrack(mCurrentTrack);
     }
 
@@ -312,6 +341,7 @@ public class PlayerDialogFragment extends DialogFragment {
         // Button is disabled if there is no next track, so we won't go past the end.
         mTrackIndex++ ;
         mCurrentTrack = mTracks.get(mTrackIndex) ;
+        mCurrentTrackPos = 0 ;
         startTrack(mCurrentTrack);
     }
 
@@ -346,7 +376,12 @@ public class PlayerDialogFragment extends DialogFragment {
         }
     }
 
-    /** If the player dialog / activity is dismissed, then stop playing and release resources. */
+    /**
+     * If the player dialog / activity is dismissed, then stop playing and release resources.
+     *
+     * FIXME: releasing the player after onPause & onStop means music is interrupted when device is rotated.
+     * FIXME: it also means streaming is restarted. Cleanest solution is to move player into a service.
+     */
     private void releasePlayer() {
         if( mPlayer!=null ) {
             if( mPlayer.isPlaying() ) {
@@ -408,4 +443,35 @@ public class PlayerDialogFragment extends DialogFragment {
     public interface OnFragmentInteractionListener {
         public void onFragmentInteraction();
     }
+
+    /** Restore list of tracks, current track index and position within track from the bundle. */
+    private void restoreTracks(Bundle savedInstanceState) {
+        ArrayList<ArtistTrack> trackList = savedInstanceState.getParcelableArrayList(ARG_TRACK_LIST) ;
+        if( trackList!=null ) {
+            Log.d(LOG_TAG, "restoreTracks() restored " + trackList.size() + " tracks") ;
+            mTracks.addAll(trackList) ;
+        }
+        else {
+            Log.d(LOG_TAG, "restoreTracks() no tracks to restore") ;
+        }
+
+        mTrackIndex = savedInstanceState.getInt(ARG_TRACK_INDEX) ;
+        mCurrentTrackPos = savedInstanceState.getInt(ARG_TRACK_POS) ;
+
+        mCurrentTrack = mTracks.get(mTrackIndex) ;
+        Log.d(LOG_TAG, "restoreTracks() restored trackIndex: " + mTrackIndex+", trackPos: " + mCurrentTrackPos + ", track = "+mCurrentTrack) ;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle saveInstanceState) {
+        super.onSaveInstanceState(saveInstanceState);
+
+        int numTracks = mTracks.size() ;
+        Log.d(LOG_TAG, "onSaveInstanceState() saving " + numTracks + " tracks, index "+mTrackIndex+", trackPos "+mCurrentTrackPos);
+
+        saveInstanceState.putParcelableArrayList(ARG_TRACK_LIST, mTracks);
+        saveInstanceState.putInt(ARG_TRACK_INDEX, mTrackIndex);
+        saveInstanceState.putInt(ARG_TRACK_POS, mCurrentTrackPos);
+    }
+
 }

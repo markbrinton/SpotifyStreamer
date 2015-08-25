@@ -22,11 +22,20 @@
 
         <activity
             android:name=".ui.ArtistDetailActivity"
-            android:label="@string/title_activity_artist_detail" >
+            android:label="@string/title_activity_artist_detail"
+            android:parentActivityName=".ui.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.brintsoft.spotifystreamer.ui.MainActivity" />
         </activity>
+
         <activity
             android:name=".ui.PlayerDialogActivity"
-            android:label="@string/title_activity_player_dialog" >
+            android:label="@string/title_activity_player_dialog"
+            android:parentActivityName=".ui.ArtistDetailActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.brintsoft.spotifystreamer.ui.ArtistDetailActivity" />
         </activity>
     </application>
 
